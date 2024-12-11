@@ -13,7 +13,7 @@ def abnormal_flow(net, abnormal_rtt_results):
 
     while time.time() < end_time:
         for _ in range(500):  # 每秒執行 500 次 Ping
-            s2result = s2.cmd('ping -c 1 -W 1 %s' % h1.IP())
+            s2result = s2.cmd('ping -c 1 -s 1024 -W 1 %s' % h1.IP())
             rtt_pattern = re.compile(r'time=([\d\.]+) ms')
             match = rtt_pattern.search(s2result)
             if match:

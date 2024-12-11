@@ -12,7 +12,7 @@ def normal_flow(net, normal_rtt_results):
 
     while time.time() < end_time:
         # 單次 Ping
-        s1result = s1.cmd('sudo ping -c 100 -i 0.01 -W 1 %s' % h1.IP())
+        s1result = s1.cmd('sudo ping -c 100 -s 64 -W 1 %s' % h1.IP())
         rtt_pattern = re.compile(r'time=([\d\.]+) ms')
         match = rtt_pattern.search(s1result)
         if match:
