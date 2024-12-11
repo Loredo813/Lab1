@@ -10,6 +10,7 @@ import threading
 from normal_ping import normal_flow
 from abnormal_ping import abnormal_flow
 from plot_rtt import plot_rtt_results
+from statsic import calculate_rtt_statistics
 
 class BandwidthDelayTopo(Topo):
     def build(self):
@@ -69,6 +70,16 @@ def start_network():
         #     plot_rtt_results(abnormal_rtt_results, title="RTT Over Time: Abnormal Traffic")
         # else:
         #     print("No RTT results available for abnormal traffic.")
+        stats = calculate_rtt_statistics( normal_rtt_results)
+        if stats:
+            print(f"RTT Statistics:")
+            print(f"  Average RTT: {stats['average']} ms")
+            print(f"  Maximum RTT: {stats['max']} ms")
+            print(f"  Minimum RTT: {stats['min']} ms")
+            print(f"  Standard Deviation: {stats['std_deviation']} ms")
+        else:
+            print("No RTT data available.")
+
 
     finally:
         CLI(net)  # Optional: Allow user to manually interact with the network
