@@ -48,17 +48,19 @@ def start_network():
         normal_rtt_results = {}
         abnormal_rtt_results ={}
         
+        
+        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
+
+        t2 = threading.Thread(target=lambda: abnormal_flow(net, abnormal_rtt_results))
+
+
         # 1. 正常流量執行緒
         print("\n=== Start S1 Normal Traffic ===")
-        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results['normal']))
-
-        # 2. 異常流量執行緒
-        print("\n=== Start S2 Abnormal Traffic ===")
-        t2 = threading.Thread(target=lambda: abnormal_flow(net, abnormal_rtt_results['abnormal']))
-
         # Start threads
         t1.start()
         time.sleep(15)
+        # 2. 異常流量執行緒
+        print("\n=== Start S2 Abnormal Traffic ===")
         t2.start()
 
         # Wait for threads to finish
