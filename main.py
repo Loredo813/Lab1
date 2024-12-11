@@ -10,7 +10,6 @@ import threading
 from normal_ping import normal_flow
 from abnormal_ping import abnormal_flow
 from plot_rtt import plot_rtt_results
-from rtt_average import calculate_average_rtt
 
 class BandwidthDelayTopo(Topo):
     def build(self):
@@ -41,37 +40,38 @@ def start_network():
         s1 = net.get('s1')
         s2 = net.get('s2')
 
-        # Pause to ensure network stability
-        time.sleep(2)
-
-        
+        # 結果字典
         normal_rtt_results = {}
-        abnormal_rtt_results ={}
-        
-        
-        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
+        abnormal_rtt_results = {}
 
-
-        # 1. 正常流量執行緒
+        # 啟動正常流量執行緒
         print("\n=== Start S1 Normal Traffic ===")
-        # Start threads
+        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
         t1.start()
-        time.sleep(15)
+        t1.join()  # 等待正常流量執行緒完成
 
-        # Wait for threads to finish
-        t1.join()
+        # 如果需要異常流量，可啟動異常流量執行緒
+        # print("\n=== Start S2 Abnormal Traffic ===")
+        # t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
+        # t2.start()
+        # t2.join()
 
-        normal_stat=calculate_average_rtt(normal_rtt_results)
-        if normal_stat:
-            print("Normal_RTT Statistics:")
-            print(f"  Average RTT: {normal_stat['average']} ms")
-            print(f"  Minimum RTT: {normal_stat['min']} ms")
-            print(f"  Maximum RTT: {normal_stat['max']} ms")
-            print(f"  Standard Deviation: {normal_stat['std_deviation']} ms")
+        # 檢查結果是否為空並繪圖
+        if normal_rtt_results.get('ping_results'):
+            print("\n=== Plotting RTT Results for Normal Traffic ===")
+            plot_rtt_results(normal_rtt_results, title="RTT Over Time: Normal Traffic")
+        else:
+            print("No RTT results available for normal traffic.")
 
-        plot_rtt_results(normal_rtt_results, title="RTT Over Time")
-        
+        # 如果需要處理異常流量結果
+        # if abnormal_rtt_results.get('ping_results'):
+        #     print("\n=== Plotting RTT Results for Abnormal Traffic ===")
+        #     plot_rtt_results(abnormal_rtt_results, title="RTT Over Time: Abnormal Traffic")
+        # else:
+        #     print("No RTT results available for abnormal traffic.")
+
     finally:
+        CLI(net)  # Optional: Allow user to manually interact with the network
         net.stop()
 
 def main():
