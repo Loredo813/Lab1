@@ -51,21 +51,15 @@ def start_network():
         
         t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
 
-        t2 = threading.Thread(target=lambda: abnormal_flow(net, abnormal_rtt_results))
-
 
         # 1. 正常流量執行緒
         print("\n=== Start S1 Normal Traffic ===")
         # Start threads
         t1.start()
         time.sleep(15)
-        # 2. 異常流量執行緒
-        print("\n=== Start S2 Abnormal Traffic ===")
-        t2.start()
 
         # Wait for threads to finish
         t1.join()
-        t2.join()
 
         normal_stat=calculate_average_rtt(normal_rtt_results)
         if normal_stat:
@@ -75,19 +69,9 @@ def start_network():
             print(f"  Maximum RTT: {normal_stat['max']} ms")
             print(f"  Standard Deviation: {normal_stat['std_deviation']} ms")
 
-        abnormal_stat=calculate_average_rtt(abnormal_rtt_results)
-        if abnormal_stat:
-            print("abormal_RTT Statistics:")
-            print(f"  Average RTT: {abnormal_stat['average']} ms")
-            print(f"  Minimum RTT: {abnormal_stat['min']} ms")
-            print(f"  Maximum RTT: {abnormal_stat['max']} ms")
-            print(f"  Standard Deviation: {abnormal_stat['std_deviation']} ms")
-        # Plot RTT results
-        plot_rtt_results(normal_rtt_results,abnormal_rtt_results, title="RTT Over Time: Normal, Abnormal Traffic")
-    
+        plot_rtt_results(normal_rtt_results, title="RTT Over Time")
+        
     finally:
-        CLI(net)
-        # Stop network
         net.stop()
 
 def main():
