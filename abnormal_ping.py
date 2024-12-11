@@ -12,18 +12,21 @@ def abnormal_flow(net, abnormal_rtt_results):
     end_time = start_time + 30  # 測試持續 60 秒
 
     while time.time() < end_time:
-        for _ in range(500):  # 每秒執行 500 次 Ping
-            s2result = s2.cmd('ping -c 1 -s 1024 -W 1 %s' % h1.IP())
-            rtt_pattern = re.compile(r'time=([\d\.]+) ms')
-            match = rtt_pattern.search(s2result)
-            if match:
-                rtt = round(float(match.group(1)), 2)
-                abnormal_rtt_results['ping_results'].append({
-                    'source': s2.name,
-                    'target': h1.name,
-                    'rtt': rtt,
-                    'timestamp': time.time()
-                })
-            time.sleep(0.002)  # 每次 Ping 間隔 2 毫秒
+        # 單次 Ping
+        s2result = s2.cmd('sudo ping -c 300 -s 1024 -W 1 %s' % h1.IP())
+        rtt_pattern = re.compile(r'time=([\d\.]+) ms')
+        match = rtt_pattern.search(s2result)
+        if match:
+            rtt = round(float(match.group(1)), 2)
+            abnormal_rtt_results['ping_results'].append({
+                'source': s2.name,
+                'target': h1.name,
+                'rtt': rtt,
+                'timestamp': time.time()
+            })
+        else:
+            continue
+
+        time.sleep(1)  # 每秒測試一次
 
     print("Abnormal traffic finish.")
