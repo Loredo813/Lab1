@@ -8,7 +8,7 @@ def abnormal_flow(net, abnormal_rtt_results):
     # 初始化結果字典
     abnormal_rtt_results.setdefault('ping_results', [])
     start_time = time.time()
-    end_time = start_time + 15
+    end_time = start_time + 10
 
 
     while time.time() < end_time:
@@ -27,8 +27,8 @@ def abnormal_flow(net, abnormal_rtt_results):
                 'source': s2.name,
                 'target': h1.name,
                 'rtt': rtt,
-                'timestamp': time.time()  # 使用數值時間戳
-                })
+                'timestamp': time.time() - start_time  # 記錄相對於啟動時間的時間戳
+            })
             print(f"[{current_time}] Success: RTT={rtt} ms (Source: {s2.name}, Target: {h1.name})")
         else:
             print(f"[{current_time}] Ping failed: No RTT recorded (Source: {s2.name}, Target: {h1.name})")
