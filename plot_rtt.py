@@ -22,7 +22,6 @@ def plot_rtt_results(normal_rtt_results, title="RTT Over Time"):
         normal_rtts,
         label="Normal Traffic",
         linestyle='-',
-        marker='o',  # 添加數據點標記
         alpha=0.7
     )
 

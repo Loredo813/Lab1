@@ -27,12 +27,12 @@ def normal_flow(net, normal_rtt_results):
                 'target': h1.name,
                 'rtt': rtt,
                 'timestamp': time.time()  # 使用數值時間戳
-})
+                })
             print(f"[{current_time}] Success: RTT={rtt} ms (Source: {s1.name}, Target: {h1.name})")
         else:
             print(f"[{current_time}] Ping failed: No RTT recorded (Source: {s1.name}, Target: {h1.name})")
         
         # 每秒測試一次
-        time.sleep(1)
+        time.sleep(0.01)
 
     print("Ping finished.")

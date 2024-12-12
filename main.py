@@ -23,9 +23,9 @@ class BandwidthDelayTopo(Topo):
         sw1 = self.addSwitch('sw1')                            # Switch1
 
         # Connect hosts and servers to the switch with specific link parameters
-        self.addLink(h1, sw1, cls=TCLink, bw=10)
-        self.addLink(s1, sw1, cls=TCLink, bw=10)
-        self.addLink(s2, sw1, cls=TCLink, bw=10)
+        self.addLink(h1, sw1, cls=TCLink, bw=10,delay=5)
+        self.addLink(s1, sw1, cls=TCLink, bw=10,delay=5)
+        self.addLink(s2, sw1, cls=TCLink, bw=10,delay=5)
 
 
 
@@ -36,10 +36,6 @@ def start_network():
     net.start()
 
     try:
-        # Get hosts and servers
-        h1 = net.get('h1')
-        s1 = net.get('s1')
-        s2 = net.get('s2')
 
         # 結果字典
         normal_rtt_results = {}
@@ -49,13 +45,16 @@ def start_network():
         print("\n=== Start S1 Normal Traffic ===")
         t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
         t1.start()
-        t1.join()  # 等待正常流量執行緒完成
 
-        # 如果需要異常流量，可啟動異常流量執行緒
-        # print("\n=== Start S2 Abnormal Traffic ===")
-        # t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
-        # t2.start()
-        # t2.join()
+        time.sleep(5)# 延遲 5 秒
+        print("\n=== Start S2 Abnormal Traffic ===")
+        t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
+        t2.start()
+
+        # 等待兩個執行緒都完成
+        t1.join()
+        t2.join()
+        print("\n=== All Traffic Completed ===")
 
         # 檢查結果是否為空並繪圖
         if normal_rtt_results.get('ping_results'):
@@ -65,11 +64,13 @@ def start_network():
             print("No RTT results available for normal traffic.")
 
         # 如果需要處理異常流量結果
-        # if abnormal_rtt_results.get('ping_results'):
-        #     print("\n=== Plotting RTT Results for Abnormal Traffic ===")
-        #     plot_rtt_results(abnormal_rtt_results, title="RTT Over Time: Abnormal Traffic")
-        # else:
-        #     print("No RTT results available for abnormal traffic.")
+        if abnormal_rtt_results.get('ping_results'):
+            print("\n=== Plotting RTT Results for Abnormal Traffic ===")
+            plot_rtt_results(abnormal_rtt_results, title="RTT Over Time: Abnormal Traffic")
+        else:
+            print("No RTT results available for abnormal traffic.")
+
+
         stats = calculate_rtt_statistics( normal_rtt_results)
         if stats:
             print(f"RTT Statistics:")
@@ -77,6 +78,16 @@ def start_network():
             print(f"  Maximum RTT: {stats['max']} ms")
             print(f"  Minimum RTT: {stats['min']} ms")
             print(f"  Standard Deviation: {stats['std_deviation']} ms")
+        else:
+            print("No RTT data available.")
+
+        ab_stats = calculate_rtt_statistics(abnormal_rtt_results)
+        if ab_stats:
+            print(f"RTT Statistics:")
+            print(f"  Average RTT: {ab_stats['average']} ms")
+            print(f"  Maximum RTT: {ab_stats['max']} ms")
+            print(f"  Minimum RTT: {ab_stats['min']} ms")
+            print(f"  Standard Deviation: {ab_stats['std_deviation']} ms")
         else:
             print("No RTT data available.")
 
