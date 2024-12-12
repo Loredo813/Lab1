@@ -48,7 +48,6 @@ def start_network():
         t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
         t1.start()
 
-        time.sleep(5)# 延遲 5 秒
         #print("\n=== Start S2 Abnormal Traffic ===")
        # t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
         #t2.start()
@@ -58,9 +57,9 @@ def start_network():
        #t2.join()
         #print("\n=== All Traffic Completed ===")
 
-
+        plot_rtt_results(normal_rtt_results, title="Normal RTT Over Time")
         
-        stats = calculate_rtt_statistics( normal_rtt_results)
+        stats = calculate_rtt_statistics(normal_rtt_results)
         if stats:
             print(f"S1 RTT Statistics:")
             print(f"  Average RTT: {stats['average']} ms")
@@ -70,7 +69,7 @@ def start_network():
         else:
             print("No RTT data available.")
 
-        plot_rtt_results(normal_rtt_results, title="Normal RTT Over Time")
+        
 
 
        # ab_stats = calculate_rtt_statistics(abnormal_rtt_results)
