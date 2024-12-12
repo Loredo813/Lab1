@@ -7,7 +7,7 @@ def normal_flow(net, normal_rtt_results):
     start_time = time.time()
 
     try:
-        while True:
+        while time.time() - start_time <= 20:
             # 執行 ping 命令
             ping_result = s1.cmd(f'ping -c 1 {h1.IP()}')
             current_time = time.time() - start_time
@@ -17,7 +17,7 @@ def normal_flow(net, normal_rtt_results):
             if match:
                 rtt = round(float(match.group(1)), 2)
                 normal_rtt_results.append((current_time, rtt))
-                print(f"Time: {current_time:.2f}s, RTT: {rtt} ms")
+                print(f"Time: {current_time:.0f}s, RTT: {rtt} ms")
             else:
                 print(f"Time: {current_time:.2f}s, Ping failed or no RTT found.")
 
