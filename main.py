@@ -42,9 +42,17 @@ def start_network():
         s2 = net.get('s2')
 
         normal_rtt_results = []
-        #abnormal_rtt_results ={}
+        abnormal_rtt_results = []
 
-        normal_flow(net, normal_rtt_results)
+        normal_thread = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
+        abnormal_thread = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
+
+        normal_thread.start()
+        time.sleep(5)
+        abnormal_thread.start()
+        
+        normal_thread.join()
+        abnormal_thread.join()
 
         normal_stat=calculate_rtt_statistics(normal_rtt_results)
         if normal_stat:
@@ -56,6 +64,9 @@ def start_network():
 
         plot_rtt_results(normal_rtt_results, title="normal RTT Over Time")
     
+        
+
+
     finally:
         print("Stopping network...")
         # Stop network
