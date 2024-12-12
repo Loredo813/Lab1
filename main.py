@@ -23,9 +23,9 @@ class BandwidthDelayTopo(Topo):
         sw1 = self.addSwitch('sw1')                            # Switch1
 
         # Connect hosts and servers to the switch with specific link parameters
-        self.addLink(h1, sw1, cls=TCLink, bw=10,delay=5)
-        self.addLink(s1, sw1, cls=TCLink, bw=10,delay=5)
-        self.addLink(s2, sw1, cls=TCLink, bw=10,delay=5)
+        self.addLink(h1, sw1, cls=TCLink, bw=10)
+        self.addLink(s1, sw1, cls=TCLink, bw=10)
+        self.addLink(s2, sw1, cls=TCLink, bw=10)
 
 
 
@@ -36,34 +36,41 @@ def start_network():
     net.start()
 
     try:
+        # Get hosts and servers
+        h1 = net.get('h1')
+        s1 = net.get('s1')
+        s2 = net.get('s2')
 
+        # Pause to ensure network stability
+        time.sleep(2)
 
-        # 結果字典
         normal_rtt_results = {}
-        # 啟動正常流量執行緒
-        print("\n=== Start S1 Normal Traffic ===")
-        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
-        t1.start()
-
-        plot_rtt_results(normal_rtt_results, title="Normal RTT Over Time")
         
-        stats = calculate_rtt_statistics(normal_rtt_results)
-        if stats:
-            print(f"S1 RTT Statistics:")
-            print(f"  Average RTT: {stats['average']} ms")
-            print(f"  Maximum RTT: {stats['max']} ms")
-            print(f"  Minimum RTT: {stats['min']} ms")
-            print(f"  Standard Deviation: {stats['std_deviation']} ms")
-        else:
-            print("No RTT data available.")
+        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
 
+        # 1. 正常流量執行緒
+        print("\n=== Start S1 Normal Traffic ===")
+        # Start threads
+        t1.start()
+        # Wait for threads to finish
+        t1.join()
 
+        normal_stat=calculate_rtt_statistics(normal_rtt_results)
+        if normal_stat:
+            print("Normal_RTT Statistics:")
+            print(f"  Average RTT: {normal_stat['average']} ms")
+            print(f"  Minimum RTT: {normal_stat['min']} ms")
+            print(f"  Maximum RTT: {normal_stat['max']} ms")
+            print(f"  Standard Deviation: {normal_stat['std_deviation']} ms")
+
+    
     finally:
-        CLI(net)  # Optional: Allow user to manually interact with the network
+        CLI(net)
+        # Stop network
         net.stop()
 
 def main():
     start_network()
 
 if __name__ == '__main__':
-    main()
+    main() 
