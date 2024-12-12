@@ -63,14 +63,7 @@ def start_network():
         else:
             print("No RTT results available for normal traffic.")
 
-        # 如果需要處理異常流量結果
-        if abnormal_rtt_results.get('ping_results'):
-            print("\n=== Plotting RTT Results for Abnormal Traffic ===")
-            plot_rtt_results(abnormal_rtt_results, title="RTT Over Time: Abnormal Traffic")
-        else:
-            print("No RTT results available for abnormal traffic.")
-
-
+        
         stats = calculate_rtt_statistics( normal_rtt_results)
         if stats:
             print(f"RTT Statistics:")
@@ -81,6 +74,15 @@ def start_network():
         else:
             print("No RTT data available.")
 
+
+        # 如果需要處理異常流量結果
+        if abnormal_rtt_results.get('ping_results'):
+            print("\n=== Plotting RTT Results for Abnormal Traffic ===")
+            plot_rtt_results(abnormal_rtt_results, title="RTT Over Time: Abnormal Traffic")
+        else:
+            print("No RTT results available for abnormal traffic.")
+
+            
         ab_stats = calculate_rtt_statistics(abnormal_rtt_results)
         if ab_stats:
             print(f"RTT Statistics:")
