@@ -36,6 +36,8 @@ def start_network():
     net.start()
 
     try:
+        
+        start_time = time.time()
 
         # 結果字典
         normal_rtt_results = {}
@@ -43,12 +45,12 @@ def start_network():
 
         # 啟動正常流量執行緒
         print("\n=== Start S1 Normal Traffic ===")
-        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
+        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results,start_time))
         t1.start()
 
         time.sleep(5)# 延遲 5 秒
         print("\n=== Start S2 Abnormal Traffic ===")
-        t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
+        t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results,start_time))
         t2.start()
 
         # 等待兩個執行緒都完成

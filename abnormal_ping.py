@@ -1,14 +1,17 @@
 import time
 import re
 
-def abnormal_flow(net, abnormal_rtt_results):
+def abnormal_flow(net, abnormal_rtt_results,start_time):
     h1 = net.get('h1')
     s2 = net.get('s2')
 
-    # 初始化結果字典
     abnormal_rtt_results.setdefault('ping_results', [])
-    start_time = time.time()
-    end_time = start_time + 10
+    delay = 5  # 異常流量的啟動延遲
+    end_time = start_time + 15  # 異常流量結束時間（啟動延遲 + 10 秒）
+
+    # 等待到達啟動時間
+    while time.time() < start_time + delay:
+        time.sleep(0.1)
 
 
     while time.time() < end_time:
@@ -36,4 +39,4 @@ def abnormal_flow(net, abnormal_rtt_results):
         # 每秒測試一次
         time.sleep(0.004)
 
-    print("Ping finished.")
+    #print("Ping finished.")
