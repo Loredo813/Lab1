@@ -8,7 +8,7 @@ def normal_flow(net, normal_rtt_results):
     # 初始化結果字典
     normal_rtt_results.setdefault('ping_results', [])
 
-    end_time = time.time() + 20  # 結束時間為當前時間過 60 秒
+    end_time = time.time() + 60  # 結束時間為當前時間過 60 秒
 
     while time.time() < end_time:
         # 單次 Ping
@@ -26,13 +26,13 @@ def normal_flow(net, normal_rtt_results):
                 'source': s1.name,
                 'target': h1.name,
                 'rtt': rtt,
-                'timestamp': time.time()  # 使用數值時間戳
-                })
-            #print(f"[{current_time}] Success: RTT={rtt} ms (Source: {s1.name}, Target: {h1.name})")
+                'timestamp': current_time
+            })
+            print(f"[{current_time}] Success: RTT={rtt} ms (Source: {s1.name}, Target: {h1.name})")
         else:
             print(f"[{current_time}] Ping failed: No RTT recorded (Source: {s1.name}, Target: {h1.name})")
         
         # 每秒測試一次
-        time.sleep(0.01)
+        time.sleep(1)
 
     print("Ping finished.")

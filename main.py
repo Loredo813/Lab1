@@ -49,14 +49,14 @@ def start_network():
         t1.start()
 
         time.sleep(5)# 延遲 5 秒
-        print("\n=== Start S2 Abnormal Traffic ===")
-        t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
-        t2.start()
+        #print("\n=== Start S2 Abnormal Traffic ===")
+       # t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
+        #t2.start()
 
         # 等待兩個執行緒都完成
         t1.join()
-        t2.join()
-        print("\n=== All Traffic Completed ===")
+       #t2.join()
+        #print("\n=== All Traffic Completed ===")
 
 
         
@@ -73,17 +73,17 @@ def start_network():
         plot_rtt_results(normal_rtt_results, title="Normal RTT Over Time")
 
 
-        ab_stats = calculate_rtt_statistics(abnormal_rtt_results)
-        if ab_stats:
-            print(f"S2 RTT Statistics:")
-            print(f"  Average RTT: {ab_stats['average']} ms")
-            print(f"  Maximum RTT: {ab_stats['max']} ms")
-            print(f"  Minimum RTT: {ab_stats['min']} ms")
-            print(f"  Standard Deviation: {ab_stats['std_deviation']} ms")
-        else:
-            print("No RTT data available.")
+       # ab_stats = calculate_rtt_statistics(abnormal_rtt_results)
+        #if ab_stats:
+            #print(f"S2 RTT Statistics:")
+            #print(f"  Average RTT: {ab_stats['average']} ms")
+            #print(f"  Maximum RTT: {ab_stats['max']} ms")
+            #print(f"  Minimum RTT: {ab_stats['min']} ms")
+            #print(f"  Standard Deviation: {ab_stats['std_deviation']} ms")
+        #else:
+            #print("No RTT data available.")
 
-            plot_rtt_results(abnormal_rtt_results, title="Abnormal RTT Over Time")
+            #plot_rtt_results(abnormal_rtt_results, title="Abnormal RTT Over Time")
 
 
 
