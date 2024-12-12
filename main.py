@@ -9,7 +9,7 @@ import re
 import threading
 from normal_ping import normal_flow
 from abnormal_ping import abnormal_flow
-from plot_rtt import plot_rtt_results
+from plot_rtt import plot_rtt_comparison
 from statsic import calculate_rtt_statistics
 
 class BandwidthDelayTopo(Topo):
@@ -56,17 +56,11 @@ def start_network():
         t2.join()
         print("\n=== All Traffic Completed ===")
 
-        # 檢查結果是否為空並繪圖
-        if normal_rtt_results.get('ping_results'):
-            print("\n=== Plotting RTT Results for Normal Traffic ===")
-            plot_rtt_results(normal_rtt_results, title="RTT Over Time: Normal Traffic")
-        else:
-            print("No RTT results available for normal traffic.")
 
         
         stats = calculate_rtt_statistics( normal_rtt_results)
         if stats:
-            print(f"RTT Statistics:")
+            print(f"S1 RTT Statistics:")
             print(f"  Average RTT: {stats['average']} ms")
             print(f"  Maximum RTT: {stats['max']} ms")
             print(f"  Minimum RTT: {stats['min']} ms")
@@ -75,23 +69,25 @@ def start_network():
             print("No RTT data available.")
 
 
-        # 如果需要處理異常流量結果
-        if abnormal_rtt_results.get('ping_results'):
-            print("\n=== Plotting RTT Results for Abnormal Traffic ===")
-            plot_rtt_results(abnormal_rtt_results, title="RTT Over Time: Abnormal Traffic")
-        else:
-            print("No RTT results available for abnormal traffic.")
 
-            
+
         ab_stats = calculate_rtt_statistics(abnormal_rtt_results)
         if ab_stats:
-            print(f"RTT Statistics:")
+            print(f"S2 RTT Statistics:")
             print(f"  Average RTT: {ab_stats['average']} ms")
             print(f"  Maximum RTT: {ab_stats['max']} ms")
             print(f"  Minimum RTT: {ab_stats['min']} ms")
             print(f"  Standard Deviation: {ab_stats['std_deviation']} ms")
         else:
             print("No RTT data available.")
+
+        # 如果需要處理兩種流量的結果
+        if normal_rtt_results.get('ping_results') or abnormal_rtt_results.get('ping_results'):
+            print("\n=== Plotting RTT Results for Both Normal and Abnormal Traffic ===")
+            plot_rtt_comparison(normal_rtt_results, abnormal_rtt_results)
+        else:
+            print("No RTT results available for plotting.")
+
 
 
     finally:
