@@ -2,37 +2,43 @@ import time
 import re
 
 def normal_flow(net, normal_rtt_results):
+    """
+    執行正常流量：s1 每秒對 h1 執行一次 ping，將 RTT 結果儲存到 normal_rtt_results 中。
+    
+    :param net: Mininet 網路實例
+    :param normal_rtt_results: 用於儲存 RTT 結果的字典
+    """
     h1 = net.get('h1')
     s1 = net.get('s1')
 
-    # 初始化結果字典
-    normal_rtt_results.setdefault('ping_results', [])
+    # 初始化 RTT 結果
+    if 'ping_results' not in normal_rtt_results:
+        normal_rtt_results['ping_results'] = []
 
-    end_time = time.time() + 60  # 結束時間為當前時間過 60 秒
+    try:
+        print("Starting normal flow: s1 pinging h1")
+        while True:
+            # 執行 ping 命令，指定封包大小為 64 字節
+            ping_output = s1.cmd(f'ping -c 1 -s 64 {h1.IP()}')
 
-    while time.time() < end_time:
-        # 單次 Ping
-        s1result = s1.cmd(f'ping -c 1 -s 64 -W 1 {h1.IP()}')
-        
-        # 匹配 RTT
-        rtt_pattern = re.compile(r'time=([\d\.]+) ms')
-        match = rtt_pattern.search(s1result)
+            # 使用正則表達式提取 RTT
+            match = re.search(r'time=(\d+\.\d+) ms', ping_output)
+            if match:
+                rtt = float(match.group(1))
+                timestamp = time.strftime("%H:%M:%S", time.localtime())
 
-        # 紀錄結果
-        current_time = time.strftime('%H:%M:%S', time.localtime())
-        if match:
-            rtt = round(float(match.group(1)), 2)
-            normal_rtt_results['ping_results'].append({
-                'source': s1.name,
-                'target': h1.name,
-                'rtt': rtt,
-                'timestamp': current_time
-            })
-            print(f"[{current_time}] Success: RTT={rtt} ms (Source: {s1.name}, Target: {h1.name})")
-        else:
-            print(f"[{current_time}] Ping failed: No RTT recorded (Source: {s1.name}, Target: {h1.name})")
-        
-        # 每秒測試一次
-        time.sleep(1)
+                # 儲存 RTT 結果
+                normal_rtt_results['ping_results'].append({
+                    'timestamp': timestamp,
+                    'rtt': rtt
+                })
 
-    print("Ping finished.")
+                print(f"[{timestamp}] Ping RTT: {rtt} ms")
+            else:
+                print("Ping failed or RTT not found")
+
+            # 每秒執行一次 ping
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        print("Normal flow interrupted by user.")
