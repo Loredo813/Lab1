@@ -41,19 +41,10 @@ def start_network():
         s1 = net.get('s1')
         s2 = net.get('s2')
 
-        # Pause to ensure network stability
-        time.sleep(2)
-
         normal_rtt_results = {}
-        
-        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
+        #abnormal_rtt_results ={}
 
-        # 1. 正常流量執行緒
-        print("\n=== Start S1 Normal Traffic ===")
-        # Start threads
-        t1.start()
-        # Wait for threads to finish
-        t1.join()
+        normal_flow(net, normal_rtt_results)
 
         normal_stat=calculate_rtt_statistics(normal_rtt_results)
         if normal_stat:
@@ -65,7 +56,7 @@ def start_network():
 
     
     finally:
-        CLI(net)
+        print("Stopping network...")
         # Stop network
         net.stop()
 

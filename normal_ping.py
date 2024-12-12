@@ -4,33 +4,24 @@ import re
 def normal_flow(net, normal_rtt_results):
     h1 = net.get('h1')
     s1 = net.get('s1')
-
-    # Regex pattern to extract RTT
-    rtt_pattern = r"time=(\d+\.\d+) ms"
-
-    start_time = time.time()  # Record the starting time of the ping loop
+    start_time = time.time()
 
     try:
         while True:
-            # Execute ping command
-            result = s1.cmd(f'ping -c 1 {h1.IP()}')
-
-            # Search for RTT in the output
-            match = re.search(rtt_pattern, result)
-            current_time = time.time()
-            relative_time = current_time - start_time
-
+            # 執行 ping 命令
+            ping_result = s1.cmd(f'ping -c 1 {h1.IP()}')
+            current_time = time.time() - start_time
+            
+            # 使用正則表達式擷取 RTT
+            match = re.search(r'time=(\d+\.\d+) ms', ping_result)
             if match:
-                rtt = float(match.group(1))  # Extract RTT in milliseconds
-                normal_rtt_results.append((current_time, relative_time, rtt))  # Append timestamp, relative time, and RTT
-                print(f"Ping successful, RTT: {rtt} ms, Timestamp: {current_time}, Relative Time: {relative_time:.2f} s")
+                rtt = round(float(match.group(1)), 2)
+                normal_rtt_results.append((current_time, rtt))
+                print(f"Time: {current_time:.2f}s, RTT: {rtt} ms")
             else:
-                print(f"Ping failed or RTT not found. Timestamp: {current_time}, Relative Time: {relative_time:.2f} s")
+                print(f"Time: {current_time:.2f}s, Ping failed or no RTT found.")
 
-            # Wait for 1 second before the next ping
+            # 每秒執行一次
             time.sleep(1)
     except KeyboardInterrupt:
-        print("Ping loop interrupted by user.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
+        print("Ping process stopped.")

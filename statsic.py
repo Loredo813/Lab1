@@ -2,13 +2,12 @@ import numpy as np
 import statistics
 
 def calculate_rtt_statistics(normal_rtt_results):
-
-
     if not normal_rtt_results:
         print("No RTT data available for analysis.")
         return
 
-    rtts = [entry[2] for entry in normal_rtt_results]
+    # 假設 normal_rtt_results 包含時間和 RTT 的 tuple 清單
+    rtts = [entry[1] for entry in normal_rtt_results]
     avg_rtt = statistics.mean(rtts)
     max_rtt = max(rtts)
     min_rtt = min(rtts)
