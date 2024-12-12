@@ -6,12 +6,16 @@ def plot_rtt_results(normal_rtt_results, title="RTT Over Time"):
         print("No RTT data available to plot.")
         return
 
-    # 計算相對時間
-    start_time = normal_rtt_results['ping_results'][0]['timestamp']
-    normal_timestamps = [
-        entry['timestamp'] - start_time for entry in normal_rtt_results['ping_results']
-    ]
-    normal_rtts = [entry['rtt'] for entry in normal_rtt_results['ping_results']]
+    # 將 timestamp 轉換為數字類型
+    try:
+        start_time = float(normal_rtt_results['ping_results'][0]['timestamp'])
+        normal_timestamps = [
+            float(entry['timestamp']) - start_time for entry in normal_rtt_results['ping_results']
+        ]
+        normal_rtts = [float(entry['rtt']) for entry in normal_rtt_results['ping_results']]
+    except ValueError as e:
+        print(f"Error parsing timestamp or RTT values: {e}")
+        return
 
     # 開始繪圖
     plt.figure(figsize=(12, 6))
@@ -22,7 +26,6 @@ def plot_rtt_results(normal_rtt_results, title="RTT Over Time"):
         normal_rtts,
         label="Normal Traffic",
         linestyle='-',  # 折線樣式
-        marker='o',     # 數據點標記
         alpha=0.7       # 半透明效果
     )
 
