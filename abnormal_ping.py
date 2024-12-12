@@ -17,7 +17,7 @@ def abnormal_flow(net, abnormal_rtt_results):
             if match:
                 rtt = round(float(match.group(1)), 2)
                 abnormal_rtt_results.append((current_time, rtt))
-                print(f"Time: {current_time:.2f}s, RTT: {rtt} ms")
+                print(f"[Abnormal] S2->h1, RTT: {rtt} ms")
             else:
                 print(f"Time: {current_time:.2f}s, Ping failed or no RTT found.")
 

@@ -63,10 +63,18 @@ def start_network():
             print(f"  Standard Deviation: {normal_stat['std_deviation']} ms")
 
         plot_rtt_results(normal_rtt_results, title="normal RTT Over Time")
-    
+
+        abnormal_stat=calculate_rtt_statistics(abnormal_rtt_results)
+        if abnormal_stat:
+            print("Abormal_RTT Statistics:")
+            print(f"  Average RTT: {abnormal_stat['average']} ms")
+            print(f"  Minimum RTT: {abnormal_stat['min']} ms")
+            print(f"  Maximum RTT: {abnormal_stat['max']} ms")
+            print(f"  Standard Deviation: {abnormal_stat['std_deviation']} ms")
+
+        plot_rtt_results(abnormal_rtt_results, title="abnormal RTT Over Time")
+
         
-
-
     finally:
         print("Stopping network...")
         # Stop network

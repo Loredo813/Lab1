@@ -17,7 +17,7 @@ def normal_flow(net, normal_rtt_results):
             if match:
                 rtt = round(float(match.group(1)), 2)
                 normal_rtt_results.append((current_time, rtt))
-                print(f"Time: {current_time:.0f}s, RTT: {rtt} ms")
+                print(f"[Normal] S1->h1, RTT: {rtt} ms")
             else:
                 print(f"Time: {current_time:.2f}s, Ping failed or no RTT found.")
 
