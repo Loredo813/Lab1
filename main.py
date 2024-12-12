@@ -41,7 +41,7 @@ def start_network():
         s1 = net.get('s1')
         s2 = net.get('s2')
 
-        normal_rtt_results = {}
+        normal_rtt_results = []
         #abnormal_rtt_results ={}
 
         normal_flow(net, normal_rtt_results)
@@ -54,6 +54,7 @@ def start_network():
             print(f"  Maximum RTT: {normal_stat['max']} ms")
             print(f"  Standard Deviation: {normal_stat['std_deviation']} ms")
 
+        plot_rtt_results(normal_rtt_results, title="normal RTT Over Time")
     
     finally:
         print("Stopping network...")
