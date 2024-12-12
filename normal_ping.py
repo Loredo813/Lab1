@@ -1,14 +1,14 @@
 import time
 import re
 
-def normal_flow(net, normal_rtt_results,start_time):
+def normal_flow(net, normal_rtt_results):
     h1 = net.get('h1')
     s1 = net.get('s1')
 
     # 初始化結果字典
     normal_rtt_results.setdefault('ping_results', [])
 
-    end_time = start_time + 20  # 結束時間為當前時間過 60 秒
+    end_time = time.time() + 20  # 結束時間為當前時間過 60 秒
 
     while time.time() < end_time:
         # 單次 Ping

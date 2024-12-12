@@ -5,13 +5,9 @@ def abnormal_flow(net, abnormal_rtt_results,start_time):
     h1 = net.get('h1')
     s2 = net.get('s2')
 
-    abnormal_rtt_results.setdefault('ping_results', [])
-    delay = 5  # 異常流量的啟動延遲
-    end_time = start_time + 15  # 異常流量結束時間（啟動延遲 + 10 秒）
-
-    # 等待到達啟動時間
-    while time.time() < start_time + delay:
-        time.sleep(0.1)
+    base_time = time.time()
+    start_time = base_time + 5
+    end_time = base_time + 15  # 測試範圍：10秒內
 
 
     while time.time() < end_time:
@@ -30,7 +26,7 @@ def abnormal_flow(net, abnormal_rtt_results,start_time):
                 'source': s2.name,
                 'target': h1.name,
                 'rtt': rtt,
-                'timestamp': time.time() - start_time  # 記錄相對於啟動時間的時間戳
+                'timestamp': current_time - start_time  # 記錄相對於啟動時間的時間戳
             })
             print(f"[{current_time}] Success: RTT={rtt} ms (Source: {s2.name}, Target: {h1.name})")
         else:

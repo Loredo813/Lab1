@@ -9,7 +9,7 @@ import re
 import threading
 from normal_ping import normal_flow
 from abnormal_ping import abnormal_flow
-from plot_rtt import plot_rtt_comparison
+from plot_rtt import plot_rtt_results
 from statsic import calculate_rtt_statistics
 
 class BandwidthDelayTopo(Topo):
@@ -45,12 +45,12 @@ def start_network():
 
         # 啟動正常流量執行緒
         print("\n=== Start S1 Normal Traffic ===")
-        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results,start_time))
+        t1 = threading.Thread(target=normal_flow, args=(net, normal_rtt_results))
         t1.start()
 
         time.sleep(5)# 延遲 5 秒
         print("\n=== Start S2 Abnormal Traffic ===")
-        t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results,start_time))
+        t2 = threading.Thread(target=abnormal_flow, args=(net, abnormal_rtt_results))
         t2.start()
 
         # 等待兩個執行緒都完成
@@ -70,7 +70,7 @@ def start_network():
         else:
             print("No RTT data available.")
 
-
+        plot_rtt_results(normal_rtt_results, title="Normal RTT Over Time")
 
 
         ab_stats = calculate_rtt_statistics(abnormal_rtt_results)
@@ -83,12 +83,7 @@ def start_network():
         else:
             print("No RTT data available.")
 
-        # 如果需要處理兩種流量的結果
-        if normal_rtt_results.get('ping_results') or abnormal_rtt_results.get('ping_results'):
-            print("\n=== Plotting RTT Results for Both Normal and Abnormal Traffic ===")
-            plot_rtt_comparison(normal_rtt_results, abnormal_rtt_results)
-        else:
-            print("No RTT results available for plotting.")
+            plot_rtt_results(abnormal_rtt_results, title="Abnormal RTT Over Time")
 
 
 
