@@ -9,7 +9,7 @@ def normal_flow(net, normal_rtt_results):
     try:
         while time.time() - start_time <= 20:
             # 執行 ping 命令
-            ping_result = s1.cmd(f'ping -c 1 {h1.IP()}')
+            ping_result = s1.cmd(f'ping -c 0.1 {h1.IP()}')
             current_time = time.time() - start_time
             
             # 使用正則表達式擷取 RTT
