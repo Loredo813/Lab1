@@ -29,27 +29,45 @@ class BandwidthDelayTopo(Topo):
 
 def configure_bandwidth(net, option):
     """
-    Configure the bandwidth of the switch interface based on the selected option.
+    Configure the bandwidth of the switch interface to Host (h1) based on source IP addresses (s1 and s2).
     """
-    h1 = net.get('h1')
     sw1 = net.get('sw1')
+    h1 = net.get('h1')
+    
 
-    # Determine bandwidth limits based on the option
+    # 清除先前的配置
+    sw1.cmd('tc qdisc del dev sw1-eth1 root')
+
+    # 配置 HTB 根節點
+    sw1.cmd('tc qdisc add dev sw1-eth1 root handle 1: htb default 30')
+
+    # 配置總帶寬
+    sw1.cmd('tc class add dev sw1-eth1 parent 1: classid 1:1 htb rate 10mbit')
+
     if option == 1:
-        print("Configuring bandwidth: 5Mbps to s1 and 5Mbps to s2.")
-        sw1.cmd('ovs-vsctl set interface s1 ingress_policing_rate=5000')
-        sw1.cmd('ovs-vsctl set interface s2 ingress_policing_rate=5000')
+        print("Configuring bandwidth: 5Mbps from s1 to h1, 5Mbps from s2 to h1.")
+        # 配置 s1 到 h1 的帶寬
+        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:10 htb rate 5mbit')
+        # 配置 s2 到 h1 的帶寬
+        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:20 htb rate 5mbit')
     elif option == 2:
-        print("Configuring bandwidth: 7Mbps to s1 and 3Mbps to s2.")
-        sw1.cmd('ovs-vsctl set interface s1 ingress_policing_rate=7000')
-        sw1.cmd('ovs-vsctl set interface s2 ingress_policing_rate=3000')
+        print("Configuring bandwidth: 7Mbps from s1 to h1, 3Mbps from s2 to h1.")
+        # 配置 s1 到 h1 的帶寬
+        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:10 htb rate 7mbit')
+        # 配置 s2 到 h1 的帶寬
+        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:20 htb rate 3mbit')
     elif option == 3:
-        print("Configuring bandwidth: 10Mbps total.")
-        sw1.cmd('ovs-vsctl set interface s1 ingress_policing_rate=10000')
-        sw1.cmd('ovs-vsctl set interface s2 ingress_policing_rate=10000')
+        print("Configuring bandwidth: 10Mbps shared.")
+        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:30 htb rate 10mbit')  # 共享總帶寬
     else:
         print("Invalid option. Keeping default bandwidth.")
+        return
 
+    # 添加基於來源IP的過濾條件
+    sw1.cmd('tc filter add dev sw1-eth1 protocol ip parent 1:0 prio 1 u32 match ip src 140.115.154.246 flowid 1:10')  # s1 to h1
+    sw1.cmd('tc filter add dev sw1-eth1 protocol ip parent 1:0 prio 1 u32 match ip src 140.115.154.247 flowid 1:20')  # s2 to h1
+
+    print("Bandwidth configuration applied.")
 
 def run_experiment(net):
     """
