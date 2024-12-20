@@ -29,39 +29,27 @@ class BandwidthDelayTopo(Topo):
 
 def configure_bandwidth(net, option):
     """
-    Configure the bandwidth of the switch interface to Host (h1) based on the selected option.
+    Configure the bandwidth of the switch interface based on the selected option.
     """
-    sw1 = net.get('sw1')
     h1 = net.get('h1')
+    sw1 = net.get('sw1')
 
-    # Clear previous queue configurations
-    sw1.cmd('tc qdisc del dev sw1-eth1 root')
-
-    # Apply bandwidth allocation
+    # Determine bandwidth limits based on the option
     if option == 1:
         print("Configuring bandwidth: 5Mbps to s1 and 5Mbps to s2.")
-        sw1.cmd('tc qdisc add dev sw1-eth1 root handle 1: htb default 10')
-        sw1.cmd('tc class add dev sw1-eth1 parent 1: classid 1:1 htb rate 10mbit')  # Total bandwidth
-        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:10 htb rate 5mbit')  # 5 Mbps to s1
-        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:20 htb rate 5mbit')  # 5 Mbps to s2
-        sw1.cmd('tc filter add dev sw1-eth1 protocol ip parent 1:0 prio 1 u32 match ip dst 140.115.154.246 flowid 1:10')
-        sw1.cmd('tc filter add dev sw1-eth1 protocol ip parent 1:0 prio 1 u32 match ip dst 140.115.154.247 flowid 1:20')
+        sw1.cmd('ovs-vsctl set interface s1 ingress_policing_rate=5000')
+        sw1.cmd('ovs-vsctl set interface s2 ingress_policing_rate=5000')
     elif option == 2:
         print("Configuring bandwidth: 7Mbps to s1 and 3Mbps to s2.")
-        sw1.cmd('tc qdisc add dev sw1-eth1 root handle 1: htb default 10')
-        sw1.cmd('tc class add dev sw1-eth1 parent 1: classid 1:1 htb rate 10mbit')  # Total bandwidth
-        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:10 htb rate 7mbit')  # 7 Mbps to s1
-        sw1.cmd('tc class add dev sw1-eth1 parent 1:1 classid 1:20 htb rate 3mbit')  # 3 Mbps to s2
-        sw1.cmd('tc filter add dev sw1-eth1 protocol ip parent 1:0 prio 1 u32 match ip dst 140.115.154.246 flowid 1:10')
-        sw1.cmd('tc filter add dev sw1-eth1 protocol ip parent 1:0 prio 1 u32 match ip dst 140.115.154.247 flowid 1:20')
+        sw1.cmd('ovs-vsctl set interface s1 ingress_policing_rate=7000')
+        sw1.cmd('ovs-vsctl set interface s2 ingress_policing_rate=3000')
     elif option == 3:
-        print("Configuring bandwidth: 10Mbps shared.")
-        sw1.cmd('tc qdisc add dev sw1-eth1 root handle 1: htb default 10')
-        sw1.cmd('tc class add dev sw1-eth1 parent 1: classid 1:1 htb rate 10mbit')  # Total bandwidth shared
+        print("Configuring bandwidth: 10Mbps total.")
+        sw1.cmd('ovs-vsctl set interface s1 ingress_policing_rate=10000')
+        sw1.cmd('ovs-vsctl set interface s2 ingress_policing_rate=10000')
     else:
         print("Invalid option. Keeping default bandwidth.")
 
-    print("Bandwidth configuration applied.")
 
 def run_experiment(net):
     """
